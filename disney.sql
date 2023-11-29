@@ -1,16 +1,16 @@
 CREATE TABLE movies.disney(
    show_id      VARCHAR(5) NOT NULL PRIMARY KEY
-  ,type         VARCHAR(7) NOT NULL
-  ,title        VARCHAR(104) NOT NULL
-  ,director     VARCHAR(208)
-  ,cast         VARCHAR(771)
-  ,country      VARCHAR(123)
+  ,type         VARCHAR(7)
+  ,title        VARCHAR(1040)
+  ,director     VARCHAR(2080)
+  ,cast         VARCHAR(3000)
+  ,country      VARCHAR(248)
   ,date_added   VARCHAR(19)
-  ,release_year VARCHAR(4) NOT NULL
-  ,rating       VARCHAR(8)
+  ,release_year VARCHAR(4)
+  ,rating       VARCHAR(100)
   ,duration     VARCHAR(10)
-  ,listed_in    VARCHAR(79) NOT NULL
-  ,description  VARCHAR(248) NOT NULL
+  ,listed_in    VARCHAR(79)
+  ,description  VARCHAR(3000)
 );
 INSERT INTO movies.disney(show_id,type,title,director,cast,country,date_added,release_year,rating,duration,listed_in,description) VALUES ('s1','Movie','Duck the Halls: A Mickey Mouse Christmas Special','Alonso Ramirez Ramos, Dave Wasson','Chris Diamantopoulos, Tony Anselmo, Tress MacNeille, Bill Farmer, Russi Taylor, Corey Burton',NULL,'November 26, 2021','2016','TV-G','23 min','Animation, Family','Join Mickey and the gang as they duck the halls!');
 INSERT INTO movies.disney(show_id,type,title,director,cast,country,date_added,release_year,rating,duration,listed_in,description) VALUES ('s2','Movie','Ernest Saves Christmas','John Cherry','Jim Varney, Noelle Parker, Douglas Seale',NULL,'November 26, 2021','1988','PG','91 min','Comedy','Santa Claus passes his magic bag to a new St. Nic.');

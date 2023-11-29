@@ -1,16 +1,16 @@
 CREATE TABLE movies.hulu(
    show_id      VARCHAR(5) NOT NULL PRIMARY KEY
-  ,type         VARCHAR(7) NOT NULL
-  ,title        VARCHAR(104) NOT NULL
-  ,director     VARCHAR(208)
-  ,cast         VARCHAR(771)
-  ,country      VARCHAR(123)
+  ,type         VARCHAR(7)
+  ,title        VARCHAR(1040)
+  ,director     VARCHAR(2080)
+  ,cast         VARCHAR(3000)
+  ,country      VARCHAR(248)
   ,date_added   VARCHAR(19)
-  ,release_year VARCHAR(4) NOT NULL
-  ,rating       VARCHAR(8)
+  ,release_year VARCHAR(4)
+  ,rating       VARCHAR(100)
   ,duration     VARCHAR(10)
-  ,listed_in    VARCHAR(79) NOT NULL
-  ,description  VARCHAR(248) NOT NULL
+  ,listed_in    VARCHAR(79)
+  ,description  VARCHAR(3000)
 );
 INSERT INTO movies.hulu(show_id,type,title,director,cast,country,date_added,release_year,rating,duration,listed_in,description) VALUES ('s1','Movie','Ricky Velez: Here''s Everything',NULL,NULL,NULL,'October 24, 2021','2021','TV-MA',NULL,'Comedy, Stand Up','​Comedian Ricky Velez bares it all with his honest lens and down to earth perspective in his first-ever HBO stand-up special.');
 INSERT INTO movies.hulu(show_id,type,title,director,cast,country,date_added,release_year,rating,duration,listed_in,description) VALUES ('s2','Movie','Silent Night',NULL,NULL,NULL,'October 23, 2021','2020',NULL,'94 min','Crime, Drama, Thriller','Mark, a low end South London hitman recently released from prison, tries to go straight for his daughter, but gets drawn back in by Alan, his former cellmate, to do one final job.');
