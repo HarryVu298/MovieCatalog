@@ -27,7 +27,7 @@ class MovieApp(QMainWindow):
         self.central_widget = QWidget(self)
         self.main_layout = QVBoxLayout(self.central_widget)
         self.central_widget.setStyleSheet("background-color: #f0f0f0; color: black;")
-        font = QFont("Arial", 16)
+        font = QFont("Arial", 15)
         self.central_widget.setFont(font)
 
         # Dropdown for selecting the streaming service
@@ -62,9 +62,13 @@ class MovieApp(QMainWindow):
 
         # Layout for the first line of search options (Title, Type, Country, Release Year, Rating)
         first_line_layout = QHBoxLayout()
-        first_line_layout.addWidget(QLabel('Title:'))
+        s1 = QLabel('Title:')
+        s1.setFont(font)
+        first_line_layout.addWidget(s1)
         first_line_layout.addWidget(self.title_search)
-        first_line_layout.addWidget(QLabel('Type:'))
+        s1 = QLabel('Type:')
+        s1.setFont(font)
+        first_line_layout.addWidget(s1)
         first_line_layout.addWidget(self.type_dropdown)
         first_line_layout.addWidget(QLabel('Country:'))
         first_line_layout.addWidget(self.country_dropdown)
