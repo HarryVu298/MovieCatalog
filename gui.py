@@ -54,8 +54,9 @@ class MovieApp(QMainWindow):
 
         # Layout for streaming service selection
         service_layout = QHBoxLayout()
-        service_layout.addWidget(QLabel('Select Streaming Service:'), alignment=Qt.AlignRight)
-        service_layout.setFont(font)
+        service_label = QLabel('Select Streaming Service:')
+        service_label.setFont(font)
+        service_layout.addWidget(service_label, alignment=Qt.AlignRight)
         service_layout.addWidget(self.service_dropdown)
         self.main_layout.addLayout(service_layout)
 
