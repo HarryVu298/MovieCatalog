@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHB
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QFont
 import mysql.connector
+import pycountry
 
 
 def create_db_connection():
@@ -38,6 +39,8 @@ class MovieApp(QMainWindow):
         # Initialize other dropdowns and search fields
         self.type_dropdown = QComboBox()
         self.country_dropdown = QComboBox()
+        countries = [country.name for country in pycountry.countries]
+        self.country_dropdown.addItems(countries)
         self.release_year_dropdown = QComboBox()
         self.rating_dropdown = QComboBox()
         self.title_search = QLineEdit()
@@ -150,7 +153,7 @@ class MovieApp(QMainWindow):
             cursor = connection.cursor()
             dropdown_mappings = {
                 "type": self.type_dropdown,
-                "country": self.country_dropdown,
+                # "country": self.country_dropdown,
                 "release_year": self.release_year_dropdown,
                 "rating": self.rating_dropdown
             }
