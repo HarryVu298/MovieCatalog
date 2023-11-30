@@ -24,6 +24,11 @@ class MovieApp(QMainWindow):
         # Main widget and layout
         self.central_widget = QWidget(self)
         self.layout = QVBoxLayout(self.central_widget)
+        self.central_widget.setStyleSheet("background-color: #f0f0f0;")  # Setting a pleasant background color
+
+        # Dropdown for selecting the streaming service
+        self.service_dropdown = QComboBox(self)
+        self.service_dropdown.addItems(["netflix", "hulu", "amazon", "disney"])
 
         # Search bar and button
         self.search_bar = QLineEdit(self)
@@ -32,10 +37,14 @@ class MovieApp(QMainWindow):
 
         # Table for displaying movie data
         self.table = QTableWidget(self)
-        self.table.setColumnCount(10)  # Adjust based on your data columns
-        self.table.setHorizontalHeaderLabels(['Title', 'Director', 'Country', 'Release Year', 'Rating', 'Duration', 'Website', '...'])  # Add your headers here
+        self.table.setColumnCount(11)  # Adjusting columns
+        self.table.setHorizontalHeaderLabels(
+            ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration',
+             'Listed In', 'Description'])
 
         # Layout adjustments
+        self.layout.addWidget(QLabel('Select Service:'))
+        self.layout.addWidget(self.service_dropdown)
         self.layout.addWidget(QLabel('Search for a Movie:'))
         self.layout.addWidget(self.search_bar)
         self.layout.addWidget(self.search_button)
@@ -43,15 +52,16 @@ class MovieApp(QMainWindow):
 
         self.setCentralWidget(self.central_widget)
         self.setWindowTitle("Movie Database Application")
-
+        self.showMaximized()  # Maximize the window
 
 
     def search_movies(self):
         search_term = self.search_bar.text()
+        selected_service = self.service_dropdown.currentText()
         connection = create_db_connection()
         if connection:
             cursor = connection.cursor()
-            query = "SELECT * FROM movies WHERE title LIKE %s OR director LIKE %s"  # Modify query as needed
+            query = f"SELECT * FROM {selected_service} WHERE title LIKE %s OR director LIKE %s"  # Modify query as needed
             cursor.execute(query, ('%' + search_term + '%', '%' + search_term + '%'))
             results = cursor.fetchall()
             self.update_table(results)
@@ -69,10 +79,4 @@ class MovieApp(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWin = MovieApp()
-    mainWin.show()
     sys.exit(app.exec_())
-
-
-
-
-
