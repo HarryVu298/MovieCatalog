@@ -25,114 +25,101 @@ class MovieApp(QMainWindow):
 
         # Main widget and layout
         self.central_widget = QWidget(self)
-        self.layout = QVBoxLayout(self.central_widget)
-        self.central_widget.setStyleSheet(
-            "background-color: #f0f0f0; color: black;")  # Set background color and text color
-        font = QFont("Arial", 12)  # Set font type and size
-        self.central_widget.setFont(font)  # Apply font to the central widget, affecting all child widgets
+        self.main_layout = QVBoxLayout(self.central_widget)
+        self.central_widget.setStyleSheet("background-color: #f0f0f0; color: black;")
+        font = QFont("Arial", 12)
+        self.central_widget.setFont(font)
 
         # Dropdown for selecting the streaming service
-        self.service_dropdown = QComboBox(self)
+        self.service_dropdown = QComboBox()
         self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon", "Disney"])
         self.service_dropdown.setFont(font)
 
         # Initialize other dropdowns and search fields
-        self.type_dropdown = QComboBox(self)
-        self.country_dropdown = QComboBox(self)
-        self.release_year_dropdown = QComboBox(self)
-        self.rating_dropdown = QComboBox(self)
-        self.title_search = QLineEdit(self)
-        self.director_search = QLineEdit(self)
-        self.cast_search = QLineEdit(self)
+        self.type_dropdown = QComboBox()
+        self.country_dropdown = QComboBox()
+        self.release_year_dropdown = QComboBox()
+        self.rating_dropdown = QComboBox()
+        self.title_search = QLineEdit()
+        self.director_search = QLineEdit()
+        self.cast_search = QLineEdit()
 
         # Populate dropdowns with data from the database
         self.populate_dropdowns()
 
+        # Layout for streaming service selection
+        service_layout = QHBoxLayout()
+        service_layout.addWidget(QLabel('Select Streaming Service:'), alignment=Qt.AlignRight)
+        service_layout.addWidget(self.service_dropdown)
+        self.main_layout.addLayout(service_layout)
 
+        # Layout for the first line of search options (Title, Type, Country, Release Year, Rating)
+        first_line_layout = QHBoxLayout()
+        first_line_layout.addWidget(QLabel('Title:'))
+        first_line_layout.addWidget(self.title_search)
+        first_line_layout.addWidget(QLabel('Type:'))
+        first_line_layout.addWidget(self.type_dropdown)
+        first_line_layout.addWidget(QLabel('Country:'))
+        first_line_layout.addWidget(self.country_dropdown)
+        first_line_layout.addWidget(QLabel('Release Year:'))
+        first_line_layout.addWidget(self.release_year_dropdown)
+        first_line_layout.addWidget(QLabel('Rating:'))
+        first_line_layout.addWidget(self.rating_dropdown)
+        self.main_layout.addLayout(first_line_layout)
 
-        # Search bar and button
-        self.search_bar = QLineEdit(self)
-        self.search_bar.setFont(font)
+        # Layout for the second line of search options (Director, Cast)
+        second_line_layout = QHBoxLayout()
+        second_line_layout.addWidget(QLabel('Director:'))
+        second_line_layout.addWidget(self.director_search)
+        second_line_layout.addWidget(QLabel('Cast:'))
+        second_line_layout.addWidget(self.cast_search)
+        self.main_layout.addLayout(second_line_layout)
+
+        # Search button
         self.search_button = QPushButton('Search', self)
         self.search_button.setStyleSheet("""
-                    QPushButton {
-                        background-color: #4CAF50;
-                        color: white;
-                        border: 2px solid #4CAF50;
-                        border-radius: 10px;
-                        padding: 10px 20px;
-                        text-align: center;
-
-                        display: inline-block;
-                        font-size: 20px;
-                        margin: 4px 2px;
-                        transition-duration: 0.4s;
-                        cursor: pointer;
-                    }
-                    QPushButton:hover {
-                        background-color: white;
-                        color: black;
-                        border: 2px solid #4CAF50;
-                        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-                    }
-                """)
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: 2px solid #4CAF50;
+                border-radius: 10px;
+                padding: 10px 20px;
+                font-size: 20px;
+                margin: 4px 2px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+            }
+            QPushButton:hover {
+                background-color: white;
+                color: black;
+                border: 2px solid #4CAF50;
+                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            }
+        """)
         self.search_button.clicked.connect(self.search_movies)
+        self.main_layout.addWidget(self.search_button)
 
         # Table for displaying movie data
-        self.table = QTableWidget(self)
-        self.table.setColumnCount(11)  # Adjusting columns
+        self.table = QTableWidget()
+        self.table.setColumnCount(11)
         self.table.setHorizontalHeaderLabels(
-            ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration',
-             'Listed In', 'Description'])
+            ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration', 'Listed In', 'Description'])
         header = self.table.horizontalHeader()
         header_font = QFont("Arial", 12)
         header_font.setBold(True)
         header.setFont(header_font)
-        header.setFont(header_font)
         header.setStretchLastSection(True)
         header.setSectionResizeMode(QHeaderView.Stretch)
         self.table.horizontalHeader().setStretchLastSection(True)
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # Make columns spread evenly
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.main_layout.addWidget(self.table)
 
-
-
-        # Layout adjustments
-        service_label = QLabel('Select Service:')
-        service_label.setFont(font)
-        self.layout.addWidget(service_label)
-        self.layout.addWidget(self.service_dropdown)
-
-        # search_label = QLabel('Search for a Movie:')
-        # search_label.setFont(font)
-        # self.layout.addWidget(search_label)
-        # self.layout.addWidget(self.search_bar)
-        # Layout for search options
-        search_layout = QHBoxLayout()
-
-        # Adding widgets to the search layout
-        search_layout.addWidget(QLabel('Type:'))
-        search_layout.addWidget(self.type_dropdown)
-        search_layout.addWidget(QLabel('Country:'))
-        search_layout.addWidget(self.country_dropdown)
-        search_layout.addWidget(QLabel('Release Year:'))
-        search_layout.addWidget(self.release_year_dropdown)
-        search_layout.addWidget(QLabel('Rating:'))
-        search_layout.addWidget(self.rating_dropdown)
-        search_layout.addWidget(QLabel('Title:'))
-        search_layout.addWidget(self.title_search)
-        search_layout.addWidget(QLabel('Director:'))
-        search_layout.addWidget(self.director_search)
-        search_layout.addWidget(QLabel('Cast:'))
-        search_layout.addWidget(self.cast_search)
-
-        # Adding search layout to the main layout
-        self.layout.addLayout(search_layout)
-        self.layout.addWidget(self.search_button)
-        self.layout.addWidget(self.table)
-
+        # Set central widget and its layout
+        self.central_widget.setLayout(self.main_layout)
         self.setCentralWidget(self.central_widget)
         self.setWindowTitle("Movie Database Application")
-        self.showMaximized()  # Maximize the window
+        self.showMaximized()
+
 
     def populate_dropdowns(self):
         connection = create_db_connection()
