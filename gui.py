@@ -36,6 +36,7 @@ class MovieApp(QMainWindow):
         self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon", "Disney"])
         self.service_dropdown.setFont(font)
 
+        # Initialize other dropdowns and search fields
         self.type_dropdown = QComboBox(self)
         self.country_dropdown = QComboBox(self)
         self.release_year_dropdown = QComboBox(self)
@@ -43,6 +44,11 @@ class MovieApp(QMainWindow):
         self.title_search = QLineEdit(self)
         self.director_search = QLineEdit(self)
         self.cast_search = QLineEdit(self)
+
+        # Populate dropdowns with data from the database
+        self.populate_dropdowns()
+
+
 
         # Search bar and button
         self.search_bar = QLineEdit(self)
@@ -88,7 +94,7 @@ class MovieApp(QMainWindow):
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # Make columns spread evenly
 
-        self.populate_dropdowns()
+
 
         # Layout adjustments
         service_label = QLabel('Select Service:')
@@ -96,10 +102,31 @@ class MovieApp(QMainWindow):
         self.layout.addWidget(service_label)
         self.layout.addWidget(self.service_dropdown)
 
-        search_label = QLabel('Search for a Movie:')
-        search_label.setFont(font)
-        self.layout.addWidget(search_label)
-        self.layout.addWidget(self.search_bar)
+        # search_label = QLabel('Search for a Movie:')
+        # search_label.setFont(font)
+        # self.layout.addWidget(search_label)
+        # self.layout.addWidget(self.search_bar)
+        # Layout for search options
+        search_layout = QHBoxLayout()
+
+        # Adding widgets to the search layout
+        search_layout.addWidget(QLabel('Type:'))
+        search_layout.addWidget(self.type_dropdown)
+        search_layout.addWidget(QLabel('Country:'))
+        search_layout.addWidget(self.country_dropdown)
+        search_layout.addWidget(QLabel('Release Year:'))
+        search_layout.addWidget(self.release_year_dropdown)
+        search_layout.addWidget(QLabel('Rating:'))
+        search_layout.addWidget(self.rating_dropdown)
+        search_layout.addWidget(QLabel('Title:'))
+        search_layout.addWidget(self.title_search)
+        search_layout.addWidget(QLabel('Director:'))
+        search_layout.addWidget(self.director_search)
+        search_layout.addWidget(QLabel('Cast:'))
+        search_layout.addWidget(self.cast_search)
+
+        # Adding search layout to the main layout
+        self.layout.addLayout(search_layout)
         self.layout.addWidget(self.search_button)
         self.layout.addWidget(self.table)
 
