@@ -28,16 +28,38 @@ class MovieApp(QMainWindow):
         self.layout = QVBoxLayout(self.central_widget)
         self.central_widget.setStyleSheet(
             "background-color: #f0f0f0; color: black;")  # Set background color and text color
-        font = QFont("Arial", 12)  # Set font type and size
+        font = QFont("Arial", 20)  # Set font type and size
         self.central_widget.setFont(font)  # Apply font to the central widget, affecting all child widgets
 
         # Dropdown for selecting the streaming service
         self.service_dropdown = QComboBox(self)
         self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon", "Disney"])
+        self.service_dropdown.setFont(font)
 
         # Search bar and button
         self.search_bar = QLineEdit(self)
+        self.search_bar.setFont(font)
         self.search_button = QPushButton('Search', self)
+        self.search_button.setFont(font)
+        self.search_button.setStyleSheet("""
+                    QPushButton {
+                        background-color: #4CAF50;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-size: 16px;
+                        margin: 4px 2px;
+                        transition-duration: 0.4s;
+                        cursor: pointer;
+                    }
+                    QPushButton:hover {
+                        background-color: white;
+                        color: black;
+                    }
+                """)
         self.search_button.clicked.connect(self.search_movies)
 
         # Table for displaying movie data
@@ -46,13 +68,22 @@ class MovieApp(QMainWindow):
         self.table.setHorizontalHeaderLabels(
             ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration',
              'Listed In', 'Description'])
+        header = self.table.horizontalHeader()
+        header.setFont(font)
+        header.setStretchLastSection(True)
+        header.setSectionResizeMode(QHeaderView.Stretch)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # Make columns spread evenly
 
         # Layout adjustments
-        self.layout.addWidget(QLabel('Select Service:'))
+        service_label = QLabel('Select Service:')
+        service_label.setFont(font)
+        self.layout.addWidget(service_label)
         self.layout.addWidget(self.service_dropdown)
-        self.layout.addWidget(QLabel('Search for a Movie:'))
+
+        search_label = QLabel('Search for a Movie:')
+        search_label.setFont(font)
+        self.layout.addWidget(search_label)
         self.layout.addWidget(self.search_bar)
         self.layout.addWidget(self.search_button)
         self.layout.addWidget(self.table)
