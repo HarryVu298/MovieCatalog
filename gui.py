@@ -28,7 +28,7 @@ class MovieApp(QMainWindow):
         self.layout = QVBoxLayout(self.central_widget)
         self.central_widget.setStyleSheet(
             "background-color: #f0f0f0; color: black;")  # Set background color and text color
-        font = QFont("Arial", 20)  # Set font type and size
+        font = QFont("Arial", 12)  # Set font type and size
         self.central_widget.setFont(font)  # Apply font to the central widget, affecting all child widgets
 
         # Dropdown for selecting the streaming service
@@ -71,7 +71,7 @@ class MovieApp(QMainWindow):
             ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration',
              'Listed In', 'Description'])
         header = self.table.horizontalHeader()
-        header_font = QFont("Arial", 16)
+        header_font = QFont("Arial", 12)
         header_font.setBold(True)
         header.setFont(header_font)
         header.setFont(header_font)
