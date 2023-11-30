@@ -45,10 +45,11 @@ class MovieApp(QMainWindow):
                     QPushButton {
                         background-color: #4CAF50;
                         color: white;
-                        border: none;
+                        border: 2px solid #4CAF50;
+                        border-radius: 10px;
                         padding: 10px 20px;
                         text-align: center;
-                        text-decoration: none;
+
                         display: inline-block;
                         font-size: 16px;
                         margin: 4px 2px;
@@ -58,6 +59,8 @@ class MovieApp(QMainWindow):
                     QPushButton:hover {
                         background-color: white;
                         color: black;
+                        border: 2px solid #4CAF50;
+                        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
                     }
                 """)
         self.search_button.clicked.connect(self.search_movies)
@@ -99,19 +102,21 @@ class MovieApp(QMainWindow):
         connection = create_db_connection()
         if connection:
             cursor = connection.cursor()
-            query = f"SELECT * FROM {selected_service} WHERE title LIKE %s OR director LIKE %s"  # Modify query as needed
+            query = f"SELECT type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM {selected_service} WHERE title LIKE %s OR director LIKE %s"
             cursor.execute(query, ('%' + search_term + '%', '%' + search_term + '%'))
             results = cursor.fetchall()
             self.update_table(results)
             cursor.close()
             connection.close()
 
-
     def update_table(self, data):
         self.table.setRowCount(len(data))
         for row_index, row_data in enumerate(data):
             for column_index, column_data in enumerate(row_data):
-                self.table.setItem(row_index, column_index, QTableWidgetItem(str(column_data)))
+                item = QTableWidgetItem(str(column_data))
+                # Set the item to be non-editable
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                self.table.setItem(row_index, column_index, item)
 
 
 if __name__ == "__main__":
