@@ -26,11 +26,11 @@ class MovieApp(QMainWindow):
         # Main widget and layout
         self.central_widget = QWidget(self)
         self.layout = QVBoxLayout(self.central_widget)
-        self.central_widget.setStyleSheet("background-color: #f0f0f0;")  # Setting a pleasant background color
+        self.central_widget.setStyleSheet("background-color: #f0f0f0;")
 
         # Dropdown for selecting the streaming service
         self.service_dropdown = QComboBox(self)
-        self.service_dropdown.addItems(["netflix", "hulu", "amazon", "disney"])
+        self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon", "Disney"])
 
         # Search bar and button
         self.search_bar = QLineEdit(self)
