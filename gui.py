@@ -98,6 +98,8 @@ class MovieApp(QMainWindow):
 
         # Search button
         self.search_button = QPushButton('Search', self)
+        bold_font = QFont("Arial", 16, QFont.Bold)  # Bold font
+        self.search_button.setFont(bold_font)
         self.search_button.setStyleSheet("""
             QPushButton {
                 background-color: #4CAF50;
