@@ -40,7 +40,7 @@ class MovieApp(QMainWindow):
         self.type_dropdown = QComboBox()
         self.country_dropdown = QComboBox()
         countries = [country.name for country in pycountry.countries]
-        self.country_dropdown.addItems(countries)
+        self.country_dropdown.addItems(['']+ countries)
         self.release_year_dropdown = QComboBox()
         self.rating_dropdown = QComboBox()
         self.title_search = QLineEdit()
