@@ -210,7 +210,7 @@ class MovieApp(QMainWindow):
         where_clause = ' AND '.join(query_conditions) if query_conditions else '1'
 
         # Final query
-        query = f"SELECT type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM {selected_service} WHERE {where_clause} ORDER BY release_year"
+        query = f"SELECT type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM {selected_service} WHERE {where_clause} ORDER BY release_year DESC "
 
         # Execute the query
         connection = create_db_connection()
