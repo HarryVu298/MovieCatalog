@@ -36,6 +36,14 @@ class MovieApp(QMainWindow):
         self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon", "Disney"])
         self.service_dropdown.setFont(font)
 
+        self.type_dropdown = QComboBox(self)
+        self.country_dropdown = QComboBox(self)
+        self.release_year_dropdown = QComboBox(self)
+        self.rating_dropdown = QComboBox(self)
+        self.title_search = QLineEdit(self)
+        self.director_search = QLineEdit(self)
+        self.cast_search = QLineEdit(self)
+
         # Search bar and button
         self.search_bar = QLineEdit(self)
         self.search_bar.setFont(font)
@@ -80,6 +88,8 @@ class MovieApp(QMainWindow):
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # Make columns spread evenly
 
+        self.populate_dropdowns()
+
         # Layout adjustments
         service_label = QLabel('Select Service:')
         service_label.setFont(font)
@@ -97,15 +107,76 @@ class MovieApp(QMainWindow):
         self.setWindowTitle("Movie Database Application")
         self.showMaximized()  # Maximize the window
 
-
-    def search_movies(self):
-        search_term = self.search_bar.text()
-        selected_service = self.service_dropdown.currentText()
+    def populate_dropdowns(self):
         connection = create_db_connection()
         if connection:
             cursor = connection.cursor()
-            query = f"SELECT type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM {selected_service} WHERE title LIKE %s OR director LIKE %s"
-            cursor.execute(query, ('%' + search_term + '%', '%' + search_term + '%'))
+            dropdown_mappings = {
+                "type": self.type_dropdown,
+                "country": self.country_dropdown,
+                "release_year": self.release_year_dropdown,
+                "rating": self.rating_dropdown
+            }
+            for column, dropdown in dropdown_mappings.items():
+                query = f"""
+                SELECT DISTINCT {column} FROM movies.netflix
+                UNION
+                SELECT DISTINCT {column} FROM movies.hulu
+                UNION
+                SELECT DISTINCT {column} FROM movies.amazon
+                UNION
+                SELECT DISTINCT {column} FROM movies.disney
+                ORDER BY {column};
+                """
+                cursor.execute(query)
+                results = cursor.fetchall()
+                dropdown.addItems([''] + [str(result[0]) for result in results if result[0] is not None])
+            cursor.close()
+            connection.close()
+
+    def search_movies(self):
+        # Get selected service
+        selected_service = self.service_dropdown.currentText()
+
+        # Gather search terms from dropdowns and text fields
+        type_search = self.type_dropdown.currentText()
+        country_search = self.country_dropdown.currentText()
+        release_year_search = self.release_year_dropdown.currentText()
+        rating_search = self.rating_dropdown.currentText()
+        title_search = self.title_search.text()
+        director_search = self.director_search.text()
+        cast_search = self.cast_search.text()
+
+        # Initialize a list to hold query conditions
+        query_conditions = []
+
+        # Add conditions based on user input
+        if type_search:
+            query_conditions.append(f"type LIKE '%{type_search}%'")
+        if country_search:
+            query_conditions.append(f"country LIKE '%{country_search}%'")
+        if release_year_search:
+            query_conditions.append(f"release_year = '{release_year_search}'")
+        if rating_search:
+            query_conditions.append(f"rating LIKE '%{rating_search}%'")
+        if title_search:
+            query_conditions.append(f"title LIKE '%{title_search}%'")
+        if director_search:
+            query_conditions.append(f"director LIKE '%{director_search}%'")
+        if cast_search:
+            query_conditions.append(f"cast LIKE '%{cast_search}%'")
+
+        # Construct the WHERE clause of the query
+        where_clause = ' AND '.join(query_conditions) if query_conditions else '1'
+
+        # Final query
+        query = f"SELECT type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM {selected_service} WHERE {where_clause}"
+
+        # Execute the query
+        connection = create_db_connection()
+        if connection:
+            cursor = connection.cursor()
+            cursor.execute(query)
             results = cursor.fetchall()
             self.update_table(results)
             cursor.close()
