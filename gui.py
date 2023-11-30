@@ -40,7 +40,6 @@ class MovieApp(QMainWindow):
         self.search_bar = QLineEdit(self)
         self.search_bar.setFont(font)
         self.search_button = QPushButton('Search', self)
-        self.search_button.setFont(font)
         self.search_button.setStyleSheet("""
                     QPushButton {
                         background-color: #4CAF50;
@@ -51,7 +50,7 @@ class MovieApp(QMainWindow):
                         text-align: center;
 
                         display: inline-block;
-                        font-size: 16px;
+                        font-size: 20px;
                         margin: 4px 2px;
                         transition-duration: 0.4s;
                         cursor: pointer;
@@ -72,7 +71,10 @@ class MovieApp(QMainWindow):
             ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration',
              'Listed In', 'Description'])
         header = self.table.horizontalHeader()
-        header.setFont(font)
+        header_font = QFont("Arial", 16)
+        header_font.setBold(True)
+        header.setFont(header_font)
+        header.setFont(header_font)
         header.setStretchLastSection(True)
         header.setSectionResizeMode(QHeaderView.Stretch)
         self.table.horizontalHeader().setStretchLastSection(True)
