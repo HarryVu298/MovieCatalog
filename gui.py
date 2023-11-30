@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem, QMessageBox, QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem, QMessageBox, QComboBox, QHeaderView
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QFont
 import mysql.connector
 
 
@@ -26,7 +26,10 @@ class MovieApp(QMainWindow):
         # Main widget and layout
         self.central_widget = QWidget(self)
         self.layout = QVBoxLayout(self.central_widget)
-        self.central_widget.setStyleSheet("background-color: #f0f0f0;")
+        self.central_widget.setStyleSheet(
+            "background-color: #f0f0f0; color: black;")  # Set background color and text color
+        font = QFont("Arial", 12)  # Set font type and size
+        self.central_widget.setFont(font)  # Apply font to the central widget, affecting all child widgets
 
         # Dropdown for selecting the streaming service
         self.service_dropdown = QComboBox(self)
@@ -43,6 +46,8 @@ class MovieApp(QMainWindow):
         self.table.setHorizontalHeaderLabels(
             ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration',
              'Listed In', 'Description'])
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # Make columns spread evenly
 
         # Layout adjustments
         self.layout.addWidget(QLabel('Select Service:'))
