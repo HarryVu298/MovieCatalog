@@ -6,6 +6,7 @@ import mysql.connector
 import pycountry
 
 
+# This is method to connect to the database
 def create_db_connection():
     try:
         connection = mysql.connector.connect(
@@ -147,6 +148,8 @@ class MovieApp(QMainWindow):
         self.showMaximized()
 
 
+    # Populate the dropdowns options for search options
+    # based on options available in the database
     def populate_dropdowns(self):
         connection = create_db_connection()
         if connection:
@@ -174,6 +177,7 @@ class MovieApp(QMainWindow):
             cursor.close()
             connection.close()
 
+    # Method to search for movies based on search options
     def search_movies(self):
         # Get selected service
         if self.service_dropdown.currentText() == "Amazon Prime":
@@ -229,29 +233,38 @@ class MovieApp(QMainWindow):
             cursor.close()
             connection.close()
 
+    # Method to update the table based on the data get from the database
     def update_table(self, data):
         if not data:
             # No data returned, display a message
             self.table.setRowCount(1)
-            self.table.setColumnCount(1)  # Set to 1 column to display the message
+            # Set to 1 column to display the message
+            self.table.setColumnCount(1)
             self.table.setItem(0, 0, QTableWidgetItem("No movie matches your criteria."))
-            for i in range(1, 12):  # Clear other columns if they exist
+            # Clear other columns if they exist
+            for i in range(1, 12):
                 self.table.setItem(0, i, QTableWidgetItem(""))
-            self.table.setHorizontalHeaderLabels(["Message"])  # Change header to "Message"
+                # Change header to "Message" when there is no matches
+            self.table.setHorizontalHeaderLabels(["Message"])
             return 0
         else:
             self.table.setRowCount(len(data))
-            self.table.setColumnCount(12)  # Original number of columns
+            # Original number of columns
+            # Reset the tables columns when there is data returned
+            self.table.setColumnCount(12)
             self.table.setHorizontalHeaderLabels(
                 ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration',
                  'Listed In', 'Description', 'Action'])
-
+        # put the data into the table
         for row_index, row_data in enumerate(data):
             for column_index, column_data in enumerate(row_data):
                 item = QTableWidgetItem(str(column_data))
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                 self.table.setItem(row_index, column_index, item)
 
+            # If it is not "to-watch list", then add 'Add to Watchlist'
+            # button into the action column
+            # Add "remove" otherwise
             if self.service_dropdown.currentText() != "My To-watch list":
                 # Add "Add to Watchlist" button
                 watchlist_button = QPushButton('Add to Watchlist')
@@ -294,10 +307,11 @@ class MovieApp(QMainWindow):
                 self.table.setCellWidget(row_index, 11, remove_button)
 
 
+    # Function to add the movie to watchlist when the user click the button
     def add_to_watchlist(self, row):
         # Retrieve movie details from the row
         movie_data = [self.table.item(row, col).text() for col in
-                      range(self.table.columnCount() - 1)]  # Exclude the button column
+                      range(self.table.columnCount() - 1)]
 
         # Connect to the database and check if the movie is already in the watchlist
         connection = create_db_connection()
@@ -305,6 +319,7 @@ class MovieApp(QMainWindow):
             try:
                 cursor = connection.cursor()
                 # Ensure the 'towatch' table exists
+                # if not, create one
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS movies.towatch (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -324,7 +339,8 @@ class MovieApp(QMainWindow):
 
                 # Check if the movie is already in the watchlist
                 check_query = "SELECT COUNT(*) FROM movies.towatch WHERE title = %s"
-                cursor.execute(check_query, (movie_data[1],))  # movie_data[1] is the title
+                # movie_data[1] is the title
+                cursor.execute(check_query, (movie_data[1],))
                 if cursor.fetchone()[0] > 0:
                     QMessageBox.information(self, "Already Added",
                                             f"'{movie_data[1]}' has already been added to your watchlist before.")
@@ -333,6 +349,7 @@ class MovieApp(QMainWindow):
                     insert_query = "INSERT INTO movies.towatch (type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                     cursor.execute(insert_query, tuple(movie_data))
                     connection.commit()
+                    # Message when add successfully
                     QMessageBox.information(self, "Added to Watchlist",
                                             f"'{movie_data[1]}' has been added to your watchlist.")
 
@@ -343,10 +360,10 @@ class MovieApp(QMainWindow):
                     cursor.close()
                     connection.close()
 
+    # Remove from the watchlist function
     def remove_from_watchlist(self, row):
         # Retrieve the title of the movie from the row
         title = self.table.item(row, 1).text()
-
         # Connect to the database to remove the movie from the watchlist
         connection = create_db_connection()
         if connection:
@@ -356,6 +373,7 @@ class MovieApp(QMainWindow):
                 delete_query = "DELETE FROM movies.towatch WHERE title = %s"
                 cursor.execute(delete_query, (title,))
                 connection.commit()
+                # Message for remove successfully
                 QMessageBox.information(self, "Removed from Watchlist",
                                         f"'{title}' has been removed from your watchlist.")
             except mysql.connector.Error as err:
@@ -364,6 +382,7 @@ class MovieApp(QMainWindow):
                 if connection.is_connected():
                     cursor.close()
                     connection.close()
+        # Update the table again
         self.search_movies()
 
 
