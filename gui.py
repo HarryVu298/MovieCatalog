@@ -127,9 +127,9 @@ class MovieApp(QMainWindow):
 
         # Table for displaying movie data
         self.table = QTableWidget()
-        self.table.setColumnCount(11)
+        self.table.setColumnCount(12)
         self.table.setHorizontalHeaderLabels(
-            ['Type', 'Title', 'Director', 'Cast', 'Country',  'Release Year', 'Rating', 'Duration', 'Listed In', 'Description', 'Action'])
+            ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration', 'Listed In', 'Description', 'Action'])
         header = self.table.horizontalHeader()
         header_font = QFont("Arial", 12)
         header_font.setBold(True)
@@ -215,7 +215,7 @@ class MovieApp(QMainWindow):
         where_clause = ' AND '.join(query_conditions) if query_conditions else '1'
 
         # Final query
-        query = f"SELECT type, title, director, cast, country, release_year, rating, duration, listed_in, description FROM {selected_service} WHERE {where_clause} ORDER BY release_year DESC "
+        query = f"SELECT type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM {selected_service} WHERE {where_clause} ORDER BY release_year DESC "
 
         # Execute the query
         connection = create_db_connection()
@@ -254,7 +254,7 @@ class MovieApp(QMainWindow):
             }
         """)
             watchlist_button.clicked.connect(lambda checked, row=row_index: self.add_to_watchlist(row))
-            self.table.setCellWidget(row_index, 10, watchlist_button)
+            self.table.setCellWidget(row_index, 11, watchlist_button)
 
     def add_to_watchlist(self, row):
         # Retrieve movie details from the row
