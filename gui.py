@@ -230,6 +230,12 @@ class MovieApp(QMainWindow):
             connection.close()
 
     def update_table(self, data):
+        if not data:
+            # No data returned, display a message
+            self.table.setRowCount(1)
+            self.table.setColumnCount(1)  # Set to 1 column to display the message
+            self.table.setItem(0, 0, QTableWidgetItem("No movie matches your criteria."))
+            return 0
         self.table.setRowCount(len(data))
 
         for row_index, row_data in enumerate(data):
