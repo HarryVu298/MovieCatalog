@@ -238,25 +238,47 @@ class MovieApp(QMainWindow):
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                 self.table.setItem(row_index, column_index, item)
 
-            # Add "Add to Watchlist" button
-            watchlist_button = QPushButton('Add to Watchlist')
-            watchlist_button.setStyleSheet("""
-            QPushButton {
-                background-color: #95e898;
-                color: black;
-                border: 2px solid #4CAF50;
-                border-radius: 10px;
-                transition-duration: 0.4s;
-                cursor: pointer;
-            }
-            QPushButton:hover {
-                background-color: white;
-                border: 2px solid #4CAF50;
-                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            }
-        """)
-            watchlist_button.clicked.connect(lambda checked, row=row_index: self.add_to_watchlist(row))
-            self.table.setCellWidget(row_index, 11, watchlist_button)
+            if self.service_dropdown.currentText() != "My To-watch list":
+                # Add "Add to Watchlist" button
+                watchlist_button = QPushButton('Add to Watchlist')
+                watchlist_button.setStyleSheet("""
+                QPushButton {
+                    background-color: #95e898;
+                    color: black;
+                    border: 2px solid #4CAF50;
+                    border-radius: 10px;
+                    transition-duration: 0.4s;
+                    cursor: pointer;
+                }
+                QPushButton:hover {
+                    background-color: white;
+                    border: 2px solid #4CAF50;
+                    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                }
+            """)
+                watchlist_button.clicked.connect(lambda checked, row=row_index: self.add_to_watchlist(row))
+                self.table.setCellWidget(row_index, 11, watchlist_button)
+            else:
+                # Add "Remove" button
+                remove_button = QPushButton('Remove')
+                remove_button.setStyleSheet("""
+                                QPushButton {
+                                    background-color: #95e898;
+                                    color: black;
+                                    border: 2px solid #4CAF50;
+                                    border-radius: 10px;
+                                    transition-duration: 0.4s;
+                                    cursor: pointer;
+                                }
+                                QPushButton:hover {
+                                    background-color: white;
+                                    border: 2px solid #4CAF50;
+                                    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                                }
+                            """)
+                remove_button.clicked.connect(lambda checked, row=row_index: self.remove_from_watchlist(row))
+                self.table.setCellWidget(row_index, 11, remove_button)
+
 
     def add_to_watchlist(self, row):
         # Retrieve movie details from the row
@@ -300,6 +322,28 @@ class MovieApp(QMainWindow):
                     QMessageBox.information(self, "Added to Watchlist",
                                             f"'{movie_data[1]}' has been added to your watchlist.")
 
+            except mysql.connector.Error as err:
+                QMessageBox.critical(self, "SQL Error", f"Error in SQL operation: {err}")
+            finally:
+                if connection.is_connected():
+                    cursor.close()
+                    connection.close()
+
+    def remove_from_watchlist(self, row):
+        # Retrieve the title of the movie from the row
+        title = self.table.item(row, 1).text()  # Assuming the title is in the second column
+
+        # Connect to the database to remove the movie from the watchlist
+        connection = create_db_connection()
+        if connection:
+            try:
+                cursor = connection.cursor()
+                # SQL query to delete the movie from the 'towatch' table
+                delete_query = "SET SQL_SAFE_UPDATE = 0; DELETE FROM movies.towatch WHERE title = %s"
+                cursor.execute(delete_query, (title,))
+                connection.commit()
+                QMessageBox.information(self, "Removed from Watchlist",
+                                        f"'{title}' has been removed from your watchlist.")
             except mysql.connector.Error as err:
                 QMessageBox.critical(self, "SQL Error", f"Error in SQL operation: {err}")
             finally:
