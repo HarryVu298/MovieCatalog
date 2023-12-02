@@ -244,9 +244,6 @@ class MovieApp(QMainWindow):
                 color: white;
                 border: 2px solid #4CAF50;
                 border-radius: 10px;
-                padding: 10px 20px;
-                font-size: 20px;
-                margin: 4px 2px;
                 transition-duration: 0.4s;
                 cursor: pointer;
             }
