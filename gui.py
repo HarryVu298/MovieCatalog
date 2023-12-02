@@ -31,7 +31,7 @@ class MovieApp(QMainWindow):
         font = QFont("Arial", 14)
         self.central_widget.setFont(font)
 
-        # Dropdown for selecting the streaming service
+        # Dropdown for selecting the streaming service/To-watch list
         self.service_dropdown = QComboBox()
         self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon Prime", "Disney Plus", "My To-watch list"])
         self.service_dropdown.setFont(font)
