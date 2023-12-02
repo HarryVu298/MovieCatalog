@@ -127,9 +127,9 @@ class MovieApp(QMainWindow):
 
         # Table for displaying movie data
         self.table = QTableWidget()
-        self.table.setColumnCount(11)
+        self.table.setColumnCount(12)
         self.table.setHorizontalHeaderLabels(
-            ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration', 'Listed In', 'Description'])
+            ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration', 'Listed In', 'Description', 'Action'])
         header = self.table.horizontalHeader()
         header_font = QFont("Arial", 12)
         header_font.setBold(True)
@@ -229,12 +229,51 @@ class MovieApp(QMainWindow):
 
     def update_table(self, data):
         self.table.setRowCount(len(data))
+
         for row_index, row_data in enumerate(data):
             for column_index, column_data in enumerate(row_data):
                 item = QTableWidgetItem(str(column_data))
-                # Set the item to be non-editable
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                 self.table.setItem(row_index, column_index, item)
+
+            # Add "Add to Watchlist" button
+            watchlist_button = QPushButton('Add to Watchlist')
+            watchlist_button.clicked.connect(lambda checked, row=row_index: self.add_to_watchlist(row))
+            self.table.setCellWidget(row_index, 11, watchlist_button)
+
+    def add_to_watchlist(self, row):
+        # Retrieve movie details from the row
+        movie_data = [self.table.item(row, col).text() for col in
+                      range(self.table.columnCount() - 1)]  # Exclude the button column
+
+        # Connect to the database and add the movie to the watchlist
+        connection = create_db_connection()
+        if connection:
+            cursor = connection.cursor()
+            # Ensure the 'towatch' table exists
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS movies.towatch (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    type VARCHAR(7),
+                    title VARCHAR(1040),
+                    director VARCHAR(2080),
+                    cast VARCHAR(3000),
+                    country VARCHAR(248),
+                    date_added VARCHAR(19),
+                    release_year VARCHAR(4),
+                    rating VARCHAR(100),
+                    duration VARCHAR(10),
+                    listed_in VARCHAR(79),
+                    description VARCHAR(3000)
+                );
+            """)
+            # Add movie to the 'towatch' table
+            insert_query = "INSERT INTO movies.towatch (type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(insert_query, tuple(movie_data))
+            connection.commit()
+            cursor.close()
+            connection.close()
+            QMessageBox.information(self, "Added to Watchlist", f"'{movie_data[1]}' has been added to your watchlist.")
 
 
 if __name__ == "__main__":
