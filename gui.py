@@ -33,7 +33,7 @@ class MovieApp(QMainWindow):
 
         # Dropdown for selecting the streaming service
         self.service_dropdown = QComboBox()
-        self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon", "Disney"])
+        self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon Prime", "Disney Plus"])
         self.service_dropdown.setFont(font)
 
         # Initialize other dropdowns and search fields
@@ -176,7 +176,12 @@ class MovieApp(QMainWindow):
 
     def search_movies(self):
         # Get selected service
-        selected_service = self.service_dropdown.currentText()
+        if self.service_dropdown.currentText() == "Amazon Prime":
+            selected_service = "amazon"
+        elif self.service_dropdown.currentText() == "Disney Plus":
+            selected_service = "disney"
+        else:
+            selected_service = self.service_dropdown.currentText()
 
         # Gather search terms from dropdowns and text fields
         type_search = self.type_dropdown.currentText()
