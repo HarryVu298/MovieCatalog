@@ -240,8 +240,8 @@ class MovieApp(QMainWindow):
             watchlist_button = QPushButton('Add to Watchlist')
             watchlist_button.setStyleSheet("""
             QPushButton {
-                background-color: #4b2edb4;
-                color: white;
+                background-color: #79c77c;
+                color: black;
                 border: 2px solid #4CAF50;
                 border-radius: 10px;
                 transition-duration: 0.4s;
@@ -249,7 +249,6 @@ class MovieApp(QMainWindow):
             }
             QPushButton:hover {
                 background-color: white;
-                color: black;
                 border: 2px solid #4CAF50;
                 box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
             }
