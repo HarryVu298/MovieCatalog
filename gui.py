@@ -263,34 +263,49 @@ class MovieApp(QMainWindow):
         movie_data = [self.table.item(row, col).text() for col in
                       range(self.table.columnCount() - 1)]  # Exclude the button column
 
-        # Connect to the database and add the movie to the watchlist
+        # Connect to the database and check if the movie is already in the watchlist
         connection = create_db_connection()
         if connection:
-            cursor = connection.cursor()
-            # Ensure the 'towatch' table exists
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS movies.towatch (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    type VARCHAR(7),
-                    title VARCHAR(1040),
-                    director VARCHAR(2080),
-                    cast VARCHAR(3000),
-                    country VARCHAR(248),
-                    date_added VARCHAR(19),
-                    release_year VARCHAR(4),
-                    rating VARCHAR(100),
-                    duration VARCHAR(10),
-                    listed_in VARCHAR(79),
-                    description VARCHAR(3000)
-                );
-            """)
-            # Add movie to the 'towatch' table
-            insert_query = "INSERT INTO movies.towatch (type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(insert_query, tuple(movie_data))
-            connection.commit()
-            cursor.close()
-            connection.close()
-            QMessageBox.information(self, "Added to Watchlist", f"'{movie_data[1]}' has been added to your watchlist.")
+            try:
+                cursor = connection.cursor()
+                # Ensure the 'towatch' table exists
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS movies.towatch (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        type VARCHAR(7),
+                        title VARCHAR(1040),
+                        director VARCHAR(2080),
+                        cast VARCHAR(3000),
+                        country VARCHAR(248),
+                        date_added VARCHAR(19),
+                        release_year VARCHAR(4),
+                        rating VARCHAR(100),
+                        duration VARCHAR(10),
+                        listed_in VARCHAR(79),
+                        description VARCHAR(3000)
+                    );
+                """)
+
+                # Check if the movie is already in the watchlist
+                check_query = "SELECT COUNT(*) FROM movies.towatch WHERE title = %s"
+                cursor.execute(check_query, (movie_data[1],))  # movie_data[1] is the title
+                if cursor.fetchone()[0] > 0:
+                    QMessageBox.information(self, "Already Added",
+                                            f"'{movie_data[1]}' has already been added to your watchlist.")
+                else:
+                    # Add movie to the 'towatch' table if not already present
+                    insert_query = "INSERT INTO movies.towatch (type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    cursor.execute(insert_query, tuple(movie_data))
+                    connection.commit()
+                    QMessageBox.information(self, "Added to Watchlist",
+                                            f"'{movie_data[1]}' has been added to your watchlist.")
+
+            except mysql.connector.Error as err:
+                QMessageBox.critical(self, "SQL Error", f"Error in SQL operation: {err}")
+            finally:
+                if connection.is_connected():
+                    cursor.close()
+                    connection.close()
 
 
 if __name__ == "__main__":
