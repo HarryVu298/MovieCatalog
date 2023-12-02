@@ -291,14 +291,14 @@ class MovieApp(QMainWindow):
                 cursor.execute(check_query, (movie_data[1],))  # movie_data[1] is the title
                 if cursor.fetchone()[0] > 0:
                     QMessageBox.information(self, "Already Added",
-                                            f"'{movie_data[1]}' has already been added to your watchlist.")
+                                            f"'{movie_data[1]}' has already been added to your watchlist before.")
                 else:
                     # Add movie to the 'towatch' table if not already present
                     insert_query = "INSERT INTO movies.towatch (type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                     cursor.execute(insert_query, tuple(movie_data))
                     connection.commit()
                     QMessageBox.information(self, "Added to Watchlist",
-                                            f"'{movie_data[1]}' has been added to your watchlist before.")
+                                            f"'{movie_data[1]}' has been added to your watchlist.")
 
             except mysql.connector.Error as err:
                 QMessageBox.critical(self, "SQL Error", f"Error in SQL operation: {err}")
