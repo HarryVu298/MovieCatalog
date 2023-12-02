@@ -339,7 +339,7 @@ class MovieApp(QMainWindow):
             try:
                 cursor = connection.cursor()
                 # SQL query to delete the movie from the 'towatch' table
-                delete_query = "SET SQL_SAFE_UPDATES = 0; DELETE FROM movies.towatch WHERE title = %s"
+                delete_query = "DELETE FROM movies.towatch WHERE title = %s"
                 cursor.execute(delete_query, (title,))
                 connection.commit()
                 QMessageBox.information(self, "Removed from Watchlist",
