@@ -298,7 +298,7 @@ class MovieApp(QMainWindow):
                     cursor.execute(insert_query, tuple(movie_data))
                     connection.commit()
                     QMessageBox.information(self, "Added to Watchlist",
-                                            f"'{movie_data[1]}' has been added to your watchlist.")
+                                            f"'{movie_data[1]}' has been added to your watchlist before.")
 
             except mysql.connector.Error as err:
                 QMessageBox.critical(self, "SQL Error", f"Error in SQL operation: {err}")
