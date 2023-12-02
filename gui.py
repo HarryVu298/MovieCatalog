@@ -238,6 +238,25 @@ class MovieApp(QMainWindow):
 
             # Add "Add to Watchlist" button
             watchlist_button = QPushButton('Add to Watchlist')
+            watchlist_button.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: 2px solid #4CAF50;
+                border-radius: 10px;
+                padding: 10px 20px;
+                font-size: 20px;
+                margin: 4px 2px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+            }
+            QPushButton:hover {
+                background-color: white;
+                color: black;
+                border: 2px solid #4CAF50;
+                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            }
+        """)
             watchlist_button.clicked.connect(lambda checked, row=row_index: self.add_to_watchlist(row))
             self.table.setCellWidget(row_index, 11, watchlist_button)
 
