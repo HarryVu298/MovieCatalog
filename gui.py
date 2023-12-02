@@ -235,8 +235,16 @@ class MovieApp(QMainWindow):
             self.table.setRowCount(1)
             self.table.setColumnCount(1)  # Set to 1 column to display the message
             self.table.setItem(0, 0, QTableWidgetItem("No movie matches your criteria."))
+            for i in range(1, 12):  # Clear other columns if they exist
+                self.table.setItem(0, i, QTableWidgetItem(""))
+            self.table.setHorizontalHeaderLabels(["Message"])  # Change header to "Message"
             return 0
-        self.table.setRowCount(len(data))
+        else:
+            self.table.setRowCount(len(data))
+            self.table.setColumnCount(12)  # Original number of columns
+            self.table.setHorizontalHeaderLabels(
+                ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration',
+                 'Listed In', 'Description', 'Action'])
 
         for row_index, row_data in enumerate(data):
             for column_index, column_data in enumerate(row_data):
