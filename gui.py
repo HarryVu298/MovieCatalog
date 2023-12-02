@@ -33,7 +33,7 @@ class MovieApp(QMainWindow):
 
         # Dropdown for selecting the streaming service
         self.service_dropdown = QComboBox()
-        self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon Prime", "Disney Plus"])
+        self.service_dropdown.addItems(["Netflix", "Hulu", "Amazon Prime", "Disney Plus", "My To-watch list"])
         self.service_dropdown.setFont(font)
 
         # Initialize other dropdowns and search fields
@@ -57,7 +57,7 @@ class MovieApp(QMainWindow):
 
         # Layout for streaming service selection
         service_layout = QHBoxLayout()
-        service_label = QLabel('Select Streaming Service:')
+        service_label = QLabel('Select Streaming Service / Your to-watch list:')
         service_label.setFont(font)
         service_layout.addWidget(service_label, alignment=Qt.AlignRight)
         service_layout.addWidget(self.service_dropdown)
@@ -180,6 +180,8 @@ class MovieApp(QMainWindow):
             selected_service = "amazon"
         elif self.service_dropdown.currentText() == "Disney Plus":
             selected_service = "disney"
+        elif self.service_dropdown.currentText() == "My To-watch list":
+            selected_service = "towatch"
         else:
             selected_service = self.service_dropdown.currentText()
 
