@@ -331,7 +331,7 @@ class MovieApp(QMainWindow):
 
     def remove_from_watchlist(self, row):
         # Retrieve the title of the movie from the row
-        title = self.table.item(row, 2).text()
+        title = self.table.item(row, 1).text()
 
         # Connect to the database to remove the movie from the watchlist
         connection = create_db_connection()
