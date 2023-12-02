@@ -350,6 +350,7 @@ class MovieApp(QMainWindow):
                 if connection.is_connected():
                     cursor.close()
                     connection.close()
+        self.connect(self.search_movies)
 
 
 if __name__ == "__main__":
