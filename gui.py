@@ -272,49 +272,49 @@ class MovieApp(QMainWindow):
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                 self.table.setItem(row_index, column_index, item)
 
-        # If it is not "to-watch list", then add 'Add to Watchlist'
-        # button into the action column
-        # Add "remove" otherwise
-        if self.service_dropdown.currentText() != "My To-watch list":
-            # Add "Add to Watchlist" button
-            watchlist_button = QPushButton('Add to Watchlist')
-            watchlist_button.setStyleSheet("""
-            QPushButton {
-                background-color: #95e898;
-                color: black;
-                border: 2px solid #4CAF50;
-                border-radius: 10px;
-                transition-duration: 0.4s;
-                cursor: pointer;
-            }
-            QPushButton:hover {
-                background-color: white;
-                border: 2px solid #4CAF50;
-                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            }
-        """)
-            watchlist_button.clicked.connect(lambda checked, row=row_index: self.add_to_watchlist(row))
-            self.table.setCellWidget(row_index, 11, watchlist_button)
-        else:
-            # Add "Remove" button
-            remove_button = QPushButton('Remove')
-            remove_button.setStyleSheet("""
-                            QPushButton {
-                                background-color: #95e898;
-                                color: black;
-                                border: 2px solid #4CAF50;
-                                border-radius: 10px;
-                                transition-duration: 0.4s;
-                                cursor: pointer;
-                            }
-                            QPushButton:hover {
-                                background-color: white;
-                                border: 2px solid #4CAF50;
-                                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-                            }
-                        """)
-            remove_button.clicked.connect(lambda checked, row=row_index: self.remove_from_watchlist(row))
-            self.table.setCellWidget(row_index, 11, remove_button)
+            # If it is not "to-watch list", then add 'Add to Watchlist'
+            # button into the action column
+            # Add "remove" otherwise
+            if self.service_dropdown.currentText() != "My To-watch list":
+                # Add "Add to Watchlist" button
+                watchlist_button = QPushButton('Add to Watchlist')
+                watchlist_button.setStyleSheet("""
+                QPushButton {
+                    background-color: #95e898;
+                    color: black;
+                    border: 2px solid #4CAF50;
+                    border-radius: 10px;
+                    transition-duration: 0.4s;
+                    cursor: pointer;
+                }
+                QPushButton:hover {
+                    background-color: white;
+                    border: 2px solid #4CAF50;
+                    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                }
+            """)
+                watchlist_button.clicked.connect(lambda checked, row=row_index: self.add_to_watchlist(row))
+                self.table.setCellWidget(row_index, 11, watchlist_button)
+            else:
+                # Add "Remove" button
+                remove_button = QPushButton('Remove')
+                remove_button.setStyleSheet("""
+                                QPushButton {
+                                    background-color: #95e898;
+                                    color: black;
+                                    border: 2px solid #4CAF50;
+                                    border-radius: 10px;
+                                    transition-duration: 0.4s;
+                                    cursor: pointer;
+                                }
+                                QPushButton:hover {
+                                    background-color: white;
+                                    border: 2px solid #4CAF50;
+                                    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                                }
+                            """)
+                remove_button.clicked.connect(lambda checked, row=row_index: self.remove_from_watchlist(row))
+                self.table.setCellWidget(row_index, 11, remove_button)
 
     # Function to add the movie to watchlist when the user click the button
     def add_to_watchlist(self, row):
