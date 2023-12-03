@@ -6,8 +6,10 @@ import mysql.connector
 import pycountry
 
 
-# This is method to connect to the database
+# This is function to connect to the database
 def create_db_connection():
+    # Try connect to the database
+    # Show error if cannot connect
     try:
         connection = mysql.connector.connect(
             host='localhost',
@@ -16,8 +18,8 @@ def create_db_connection():
             database='movies'
         )
         return connection
-    except mysql.connector.Error as err:
-        QMessageBox.critical(None, "Database Connection Error", f"Error connecting to database: {err}")
+    except mysql.connector.Error:
+        QMessageBox.critical(None, "Database Connection Error", "Error connecting to database")
         return None
 
 
@@ -102,7 +104,7 @@ class MovieApp(QMainWindow):
 
         # Search button
         self.search_button = QPushButton('Search', self)
-        bold_font = QFont("Arial", 16, QFont.Bold)  # Bold font
+        bold_font = QFont("Arial", 16, QFont.Bold)
         self.search_button.setFont(bold_font)
         self.search_button.setStyleSheet("""
             QPushButton {
@@ -123,6 +125,7 @@ class MovieApp(QMainWindow):
                 box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
             }
         """)
+        # Call search movies function when the user click the search button
         self.search_button.clicked.connect(self.search_movies)
         self.main_layout.addWidget(self.search_button)
 
@@ -148,6 +151,8 @@ class MovieApp(QMainWindow):
         self.setWindowTitle("Movie Database Application")
         self.showMaximized()
 
+    # Function to show cell content
+    # when the user click on the cell
     def show_cell_content(self, row, column):
         # Retrieve the content of the clicked cell
         cell_content = self.table.item(row, column).text()
@@ -179,7 +184,7 @@ class MovieApp(QMainWindow):
                 """
                 cursor.execute(query)
                 results = cursor.fetchall()
-                dropdown.addItems([''] + [str(result[0]) for result in results if result[0] is not None])
+                dropdown.addItems([''] + [str(result[0]) for result in results])
             cursor.close()
             connection.close()
 
@@ -223,7 +228,7 @@ class MovieApp(QMainWindow):
         if cast_search:
             query_conditions.append(f"cast LIKE '%{cast_search}%'")
 
-        # Construct the WHERE clause of the query
+        # Construct the WHERE clause
         where_clause = ' AND '.join(query_conditions) if query_conditions else '1'
 
         # Final query
@@ -259,8 +264,7 @@ class MovieApp(QMainWindow):
             # Reset the tables columns when there is data returned
             self.table.setColumnCount(12)
             self.table.setHorizontalHeaderLabels(
-                ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration',
-                 'Listed In', 'Description', 'Action'])
+                ['Type', 'Title', 'Director', 'Cast', 'Country', 'Date Added', 'Release Year', 'Rating', 'Duration', 'Listed In', 'Description', 'Action'])
         # put the data into the table
         for row_index, row_data in enumerate(data):
             for column_index, column_data in enumerate(row_data):
@@ -268,55 +272,54 @@ class MovieApp(QMainWindow):
                 item.setFlags(item.flags() & ~Qt.ItemIsEditable)
                 self.table.setItem(row_index, column_index, item)
 
-            # If it is not "to-watch list", then add 'Add to Watchlist'
-            # button into the action column
-            # Add "remove" otherwise
-            if self.service_dropdown.currentText() != "My To-watch list":
-                # Add "Add to Watchlist" button
-                watchlist_button = QPushButton('Add to Watchlist')
-                watchlist_button.setStyleSheet("""
-                QPushButton {
-                    background-color: #95e898;
-                    color: black;
-                    border: 2px solid #4CAF50;
-                    border-radius: 10px;
-                    transition-duration: 0.4s;
-                    cursor: pointer;
-                }
-                QPushButton:hover {
-                    background-color: white;
-                    border: 2px solid #4CAF50;
-                    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-                }
-            """)
-                watchlist_button.clicked.connect(lambda checked, row=row_index: self.add_to_watchlist(row))
-                self.table.setCellWidget(row_index, 11, watchlist_button)
-            else:
-                # Add "Remove" button
-                remove_button = QPushButton('Remove')
-                remove_button.setStyleSheet("""
-                                QPushButton {
-                                    background-color: #95e898;
-                                    color: black;
-                                    border: 2px solid #4CAF50;
-                                    border-radius: 10px;
-                                    transition-duration: 0.4s;
-                                    cursor: pointer;
-                                }
-                                QPushButton:hover {
-                                    background-color: white;
-                                    border: 2px solid #4CAF50;
-                                    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-                                }
-                            """)
-                remove_button.clicked.connect(lambda checked, row=row_index: self.remove_from_watchlist(row))
-                self.table.setCellWidget(row_index, 11, remove_button)
+        # If it is not "to-watch list", then add 'Add to Watchlist'
+        # button into the action column
+        # Add "remove" otherwise
+        if self.service_dropdown.currentText() != "My To-watch list":
+            # Add "Add to Watchlist" button
+            watchlist_button = QPushButton('Add to Watchlist')
+            watchlist_button.setStyleSheet("""
+            QPushButton {
+                background-color: #95e898;
+                color: black;
+                border: 2px solid #4CAF50;
+                border-radius: 10px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+            }
+            QPushButton:hover {
+                background-color: white;
+                border: 2px solid #4CAF50;
+                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            }
+        """)
+            watchlist_button.clicked.connect(lambda checked, row=row_index: self.add_to_watchlist(row))
+            self.table.setCellWidget(row_index, 11, watchlist_button)
+        else:
+            # Add "Remove" button
+            remove_button = QPushButton('Remove')
+            remove_button.setStyleSheet("""
+                            QPushButton {
+                                background-color: #95e898;
+                                color: black;
+                                border: 2px solid #4CAF50;
+                                border-radius: 10px;
+                                transition-duration: 0.4s;
+                                cursor: pointer;
+                            }
+                            QPushButton:hover {
+                                background-color: white;
+                                border: 2px solid #4CAF50;
+                                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                            }
+                        """)
+            remove_button.clicked.connect(lambda checked, row=row_index: self.remove_from_watchlist(row))
+            self.table.setCellWidget(row_index, 11, remove_button)
 
     # Function to add the movie to watchlist when the user click the button
     def add_to_watchlist(self, row):
         # Retrieve movie details from the row
-        movie_data = [self.table.item(row, col).text() for col in
-                      range(self.table.columnCount() - 1)]
+        movie_data = [self.table.item(row, col).text() for col in range(self.table.columnCount() - 1)]
 
         # Connect to the database and check if the movie is already in the watchlist
         connection = create_db_connection()
@@ -328,38 +331,36 @@ class MovieApp(QMainWindow):
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS movies.towatch (
                         id INT AUTO_INCREMENT PRIMARY KEY,
-                        type VARCHAR(7),
-                        title VARCHAR(1040),
-                        director VARCHAR(2080),
-                        cast VARCHAR(3000),
-                        country VARCHAR(248),
-                        date_added VARCHAR(19),
-                        release_year VARCHAR(4),
-                        rating VARCHAR(100),
-                        duration VARCHAR(10),
-                        listed_in VARCHAR(79),
-                        description VARCHAR(3000)
+                        type varchar(7),
+                        title varchar(1040),
+                        director varchar(2080),
+                        cast varchar(3000),
+                        country varchar(248),
+                        date_added varchar(19),
+                        release_year varchar(4),
+                        rating varchar(100),
+                        duration varchar(10),
+                        listed_in varchar(79),
+                        description varchar(3000)
                     );
                 """)
 
                 # Check if the movie is already in the watchlist
-                check_query = "SELECT COUNT(*) FROM movies.towatch WHERE title = %s"
+                check_query = "SELECT count(*) FROM movies.towatch WHERE title = %s"
                 # movie_data[1] is the title
                 cursor.execute(check_query, (movie_data[1],))
                 if cursor.fetchone()[0] > 0:
-                    QMessageBox.information(self, "Already Added",
-                                            f"'{movie_data[1]}' has already been added to your watchlist before.")
+                    QMessageBox.information(self, "Already Added", f"'{movie_data[1]}' has already been added to your watchlist before.")
                 else:
                     # Add movie to the 'towatch' table if not already present
-                    insert_query = "INSERT INTO movies.towatch (type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    insert_query = "insert into movies.towatch (type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                     cursor.execute(insert_query, tuple(movie_data))
                     connection.commit()
                     # Message when add successfully
-                    QMessageBox.information(self, "Added to Watchlist",
-                                            f"'{movie_data[1]}' has been added to your watchlist.")
+                    QMessageBox.information(self, "Added to Watchlist", f"'{movie_data[1]}' has been added to your watchlist.")
 
-            except mysql.connector.Error as err:
-                QMessageBox.critical(self, "SQL Error", f"Error in SQL operation: {err}")
+            except mysql.connector.Error:
+                QMessageBox.critical(self, "SQL Error", "Error in calling SQL operation")
             finally:
                 if connection.is_connected():
                     cursor.close()
@@ -375,14 +376,13 @@ class MovieApp(QMainWindow):
             try:
                 cursor = connection.cursor()
                 # SQL query to delete the movie from the 'towatch' table
-                delete_query = "DELETE FROM movies.towatch WHERE title = %s"
+                delete_query = "delete from movies.towatch where title = %s"
                 cursor.execute(delete_query, (title,))
                 connection.commit()
                 # Message for remove successfully
-                QMessageBox.information(self, "Removed from Watchlist",
-                                        f"'{title}' has been removed from your watchlist.")
-            except mysql.connector.Error as err:
-                QMessageBox.critical(self, "SQL Error", f"Error in SQL operation: {err}")
+                QMessageBox.information(self, "Removed from Watchlist", f"'{title}' has been removed from your watchlist.")
+            except mysql.connector.Error:
+                QMessageBox.critical(self, "SQL Error", "Error in calling SQL operation")
             finally:
                 if connection.is_connected():
                     cursor.close()
