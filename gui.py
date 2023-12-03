@@ -5,19 +5,26 @@ from PyQt5.QtGui import QColor, QFont
 import mysql.connector
 import pycountry
 
+# Global variables for connection
+# so that we do not have to open and
+# close the connection multiple times - expensive
+connection = None
+cursor = None
 
-# This is function to connect to the database
+# This is function to connect to the database (Connection + cursor)
 def create_db_connection():
     # Try connect to the database
     # Show error if cannot connect
     try:
+        global connection, cursor
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
             password='minhkhoa2003dn',
             database='movies'
         )
-        return connection
+        cursor = connection.cursor()
+        return connection, cursor
     except mysql.connector.Error as err:
         QMessageBox.critical(None, "Database Connection Error", f"Error connecting to database: {err}")
         return None
@@ -162,31 +169,27 @@ class MovieApp(QMainWindow):
     # Populate the dropdowns options for search options
     # based on options available in the database
     def populate_dropdowns(self):
-        connection = create_db_connection()
-        if connection:
-            cursor = connection.cursor()
-            dropdown_mappings = {
-                "type": self.type_dropdown,
-                # "country": self.country_dropdown,
-                "release_year": self.release_year_dropdown,
-                "rating": self.rating_dropdown
-            }
-            for column, dropdown in dropdown_mappings.items():
-                query = f"""
-                SELECT DISTINCT {column} FROM movies.netflix
-                UNION
-                SELECT DISTINCT {column} FROM movies.hulu
-                UNION
-                SELECT DISTINCT {column} FROM movies.amazon
-                UNION
-                SELECT DISTINCT {column} FROM movies.disney
-                ORDER BY {column};
-                """
-                cursor.execute(query)
-                results = cursor.fetchall()
-                dropdown.addItems([''] + [str(result[0]) for result in results])
-            cursor.close()
-            connection.close()
+        dropdown_mappings = {
+            "type": self.type_dropdown,
+            # "country": self.country_dropdown,
+            "release_year": self.release_year_dropdown,
+            "rating": self.rating_dropdown
+        }
+        for column, dropdown in dropdown_mappings.items():
+            query = f"""
+            SELECT DISTINCT {column} FROM movies.netflix
+            UNION
+            SELECT DISTINCT {column} FROM movies.hulu
+            UNION
+            SELECT DISTINCT {column} FROM movies.amazon
+            UNION
+            SELECT DISTINCT {column} FROM movies.disney
+            ORDER BY {column};
+            """
+            cursor.execute(query)
+            results = cursor.fetchall()
+            dropdown.addItems([''] + [str(result[0]) for result in results])
+
 
     # Method to search for movies based on search options
     def search_movies(self):
@@ -235,14 +238,9 @@ class MovieApp(QMainWindow):
         query = f"SELECT type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description FROM {selected_service} WHERE {where_clause} ORDER BY release_year DESC "
 
         # Execute the query
-        connection = create_db_connection()
-        if connection:
-            cursor = connection.cursor()
-            cursor.execute(query)
-            results = cursor.fetchall()
-            self.update_table(results)
-            cursor.close()
-            connection.close()
+        cursor.execute(query)
+        results = cursor.fetchall()
+        self.update_table(results)
 
     # Method to update the table based on the data get from the database
     def update_table(self, data):
@@ -322,76 +320,59 @@ class MovieApp(QMainWindow):
         movie_data = [self.table.item(row, col).text() for col in range(self.table.columnCount() - 1)]
 
         # Connect to the database and check if the movie is already in the watchlist
-        connection = create_db_connection()
-        if connection:
-            try:
-                cursor = connection.cursor()
-                # Ensure the 'towatch' table exists
-                # if not, create one
-                cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS movies.towatch (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        type varchar(7),
-                        title varchar(1040),
-                        director varchar(2080),
-                        cast varchar(3000),
-                        country varchar(248),
-                        date_added varchar(19),
-                        release_year varchar(4),
-                        rating varchar(100),
-                        duration varchar(10),
-                        listed_in varchar(79),
-                        description varchar(3000)
-                    );
-                """)
+        # Ensure the 'towatch' table exists
+        # if not, create one
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS movies.towatch (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                type varchar(7),
+                title varchar(1040),
+                director varchar(2080),
+                cast varchar(3000),
+                country varchar(248),
+                date_added varchar(19),
+                release_year varchar(4),
+                rating varchar(100),
+                duration varchar(10),
+                listed_in varchar(79),
+                description varchar(3000)
+            );
+        """)
 
-                # Check if the movie is already in the watchlist
-                check_query = "SELECT count(*) FROM movies.towatch WHERE title = %s"
-                # movie_data[1] is the title
-                cursor.execute(check_query, (movie_data[1],))
-                if cursor.fetchone()[0] > 0:
-                    QMessageBox.information(self, "Already Added", f"'{movie_data[1]}' has already been added to your watchlist before.")
-                else:
-                    # Add movie to the 'towatch' table if not already present
-                    insert_query = "insert into movies.towatch (type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                    cursor.execute(insert_query, tuple(movie_data))
-                    connection.commit()
-                    # Message when add successfully
-                    QMessageBox.information(self, "Added to Watchlist", f"'{movie_data[1]}' has been added to your watchlist.")
-
-            except mysql.connector.Error:
-                QMessageBox.critical(self, "SQL Error", "Error in calling SQL operation")
-            finally:
-                if connection.is_connected():
-                    cursor.close()
-                    connection.close()
+        # Check if the movie is already in the watchlist
+        check_query = "SELECT count(*) FROM movies.towatch WHERE title = %s"
+        # movie_data[1] is the title
+        cursor.execute(check_query, (movie_data[1],))
+        if cursor.fetchone()[0] > 0:
+            QMessageBox.information(self, "Already Added", f"'{movie_data[1]}' has already been added to your watchlist before.")
+        else:
+            # Add movie to the 'towatch' table if not already present
+            insert_query = "insert into movies.towatch (type, title, director, cast, country, date_added, release_year, rating, duration, listed_in, description) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(insert_query, tuple(movie_data))
+            connection.commit()
+            # Message when add successfully
+            QMessageBox.information(self, "Added to Watchlist", f"'{movie_data[1]}' has been added to your watchlist.")
 
     # Remove from the watchlist function
     def remove_from_watchlist(self, row):
         # Retrieve the title of the movie from the row
         title = self.table.item(row, 1).text()
         # Connect to the database to remove the movie from the watchlist
-        connection = create_db_connection()
-        if connection:
-            try:
-                cursor = connection.cursor()
-                # SQL query to delete the movie from the 'towatch' table
-                delete_query = "delete from movies.towatch where title = %s"
-                cursor.execute(delete_query, (title,))
-                connection.commit()
-                # Message for remove successfully
-                QMessageBox.information(self, "Removed from Watchlist", f"'{title}' has been removed from your watchlist.")
-            except mysql.connector.Error:
-                QMessageBox.critical(self, "SQL Error", "Error in calling SQL operation")
-            finally:
-                if connection.is_connected():
-                    cursor.close()
-                    connection.close()
-        # Update the table again
+        # SQL query to delete the movie from the 'towatch' table
+        delete_query = "delete from movies.towatch where title = %s"
+        cursor.execute(delete_query, (title,))
+        connection.commit()
+        # Message for remove successfully
+        QMessageBox.information(self, "Removed from Watchlist", f"'{title}' has been removed from your watchlist.")
         self.search_movies()
 
 
 if __name__ == "__main__":
+    create_db_connection()
     app = QApplication(sys.argv)
     mainWin = MovieApp()
-    sys.exit(app.exec_())
+    exit_code = app.exec_()
+    if connection.is_connected():
+        cursor.close()
+        connection.close()
+    sys.exit(exit_code)
