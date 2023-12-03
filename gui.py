@@ -140,6 +140,7 @@ class MovieApp(QMainWindow):
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.main_layout.addWidget(self.table)
+        self.table.cellClicked.connect(self.show_cell_content)
 
         # Set central widget and its layout
         self.central_widget.setLayout(self.main_layout)
@@ -147,6 +148,11 @@ class MovieApp(QMainWindow):
         self.setWindowTitle("Movie Database Application")
         self.showMaximized()
 
+    def show_cell_content(self, row, column):
+        # Retrieve the content of the clicked cell
+        cell_content = self.table.item(row, column).text()
+        # Display the content in a QMessageBox
+        QMessageBox.information(self, "Cell Content", cell_content)
 
     # Populate the dropdowns options for search options
     # based on options available in the database
@@ -305,7 +311,6 @@ class MovieApp(QMainWindow):
                             """)
                 remove_button.clicked.connect(lambda checked, row=row_index: self.remove_from_watchlist(row))
                 self.table.setCellWidget(row_index, 11, remove_button)
-
 
     # Function to add the movie to watchlist when the user click the button
     def add_to_watchlist(self, row):
