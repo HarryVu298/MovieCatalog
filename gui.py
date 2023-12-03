@@ -18,8 +18,8 @@ def create_db_connection():
             database='movies'
         )
         return connection
-    except mysql.connector.Error:
-        QMessageBox.critical(None, "Database Connection Error", "Error connecting to database")
+    except mysql.connector.Error as err:
+        QMessageBox.critical(None, "Database Connection Error", f"Error connecting to database: {err}")
         return None
 
 
