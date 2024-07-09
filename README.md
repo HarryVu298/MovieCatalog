@@ -1,19 +1,16 @@
-# Harry Vu
-20 November 2023
-
-## PROJECT DOCUMENTATION
+# PROJECT DOCUMENTATION
 **Project Name:** Movie Database Application
 
 ### Overview
 This project focuses on developing a graphical user interface (GUI) that enables users to filter movies from multiple streaming platforms and manage their personal watchlists. The data is maintained in a database, with SQL used for data retrieval.
 
 ### 1. Source Code
-Source code files are included in the “source_code” folder which has these 2 files:
+Source code files are included in the `source_code` folder which has these 2 files:
 - `gui.py`: Python source code for the GUI
 - `database.sql`: SQL file to create the schema and tables for GUI functionality.
 
 Extra:
-- “data_downloaded” folder: Contains 4 CSV files with original data before SQL conversion.
+- `data_downloaded` folder: Contains 4 CSV files with original data before SQL conversion.
 
 ### 2. Documentation about the project
 #### a. Reference to datasets
