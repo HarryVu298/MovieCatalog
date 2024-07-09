@@ -10,7 +10,6 @@ import pycountry
 # close the connection multiple times - expensive
 connection = None
 cursor = None
-
 # This is function to connect to the database (Connection + cursor)
 def create_db_connection():
     # Try connect to the database
@@ -33,7 +32,6 @@ def create_db_connection():
 class MovieApp(QMainWindow):
     def __init__(self):
         super().__init__()
-
         # Main widget and layout
         self.central_widget = QWidget(self)
         self.main_layout = QVBoxLayout(self.central_widget)
